@@ -1,0 +1,43 @@
+{
+  "model_id": "ridge_ibm_stock_daily_v_20261025_111607",
+  "model_type": "ridge",
+  "version": "v_20261025_111607",
+  "dataset_name": "ibm_stock_daily.csv",
+  "target_col": "close",
+  "feature_cols": [
+    "lag_1",
+    "lag_2",
+    "lag_3",
+    "lag_5",
+    "lag_7",
+    "rolling_mean_3",
+    "rolling_std_3",
+    "rolling_mean_7",
+    "rolling_std_7",
+    "rolling_mean_14",
+    "rolling_std_14",
+    "day_of_week",
+    "month",
+    "day_of_month"
+  ],
+  "residual_std": 4.982914653004543,
+  "metrics": {
+    "mae": 5.0629,
+    "rmse": 6.6526,
+    "mse": 44.2568,
+    "r2": 0.6132,
+    "mape": 2.12,
+    "direction_accuracy": 31.25
+  },
+  "train_samples": 69,
+  "test_samples": 17,
+  "train_date_range": {
+    "start": "2026-06-24 00:00:00",
+    "end": "2026-09-30 00:00:00"
+  },
+  "test_date_range": {
+    "start": "2026-10-01 00:00:00",
+    "end": "2026-10-23 00:00:00"
+  },
+  "created_at": "2026-10-25T11:16:07.956206Z"
+}
