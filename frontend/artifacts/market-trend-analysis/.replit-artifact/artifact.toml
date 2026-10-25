@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Market Trend Analysis"
+description = "A market analytics workspace for exploring historical data, inspecting backend-provided forecasts, reviewing model performance, and understanding dataset quality. Includes clearly labeled demo data and a typed API-ready frontend."
+version = "1.0.0"
+id = "artifacts/market-trend-analysis"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19560
+
+[services.development]
+run = "pnpm --filter @workspace/market-trend-analysis run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/market-trend-analysis", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/market-trend-analysis/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19560"
+BASE_PATH = "/"
