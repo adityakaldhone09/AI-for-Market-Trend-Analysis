@@ -1,0 +1,43 @@
+{
+  "model_id": "ridge_synthetic_market_data_v_20261025_130603",
+  "model_type": "ridge",
+  "version": "v_20261025_130603",
+  "dataset_name": "synthetic_market_data.csv",
+  "target_col": "close",
+  "feature_cols": [
+    "lag_1",
+    "lag_2",
+    "lag_3",
+    "lag_5",
+    "lag_7",
+    "rolling_mean_3",
+    "rolling_std_3",
+    "rolling_mean_7",
+    "rolling_std_7",
+    "rolling_mean_14",
+    "rolling_std_14",
+    "day_of_week",
+    "month",
+    "day_of_month"
+  ],
+  "residual_std": 1.8295565290338207,
+  "metrics": {
+    "mae": 1.4957,
+    "rmse": 1.8331,
+    "mse": 3.3604,
+    "r2": 0.8916,
+    "mape": 1.23,
+    "direction_accuracy": 41.67
+  },
+  "train_samples": 389,
+  "test_samples": 97,
+  "train_date_range": {
+    "start": "2023-01-15 00:00:00",
+    "end": "2024-02-07 00:00:00"
+  },
+  "test_date_range": {
+    "start": "2024-02-08 00:00:00",
+    "end": "2024-05-14 00:00:00"
+  },
+  "created_at": "2026-10-25T13:06:03.754148Z"
+}
