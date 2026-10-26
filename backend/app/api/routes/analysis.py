@@ -29,6 +29,7 @@ class NarrativeResponse(BaseModel):
 
 @router.get("/data/summary", response_model=DataSummaryResponse)
 def get_data_summary(
+    market_id: Optional[str] = Query(None, description="Market identifier or dataset name"),
     dataset: Optional[str] = Query(None, description="Dataset filename or symbol"),
     symbol: Optional[str] = Query(None, description="Alias for dataset"),
     target_col: Optional[str] = Query(None, description="Target column to analyze"),
@@ -37,7 +38,7 @@ def get_data_summary(
     """
     Returns descriptive statistics, missing value audit, outlier detection, and trend metrics.
     """
-    resolved_dataset = dataset or symbol
+    resolved_dataset = market_id or dataset or symbol
     resolved_target = target_col or target
     try:
         summary = analysis_service.generate_data_summary(
@@ -48,9 +49,37 @@ def get_data_summary(
         payload["dataset"] = payload.get("dataset_name") or resolved_dataset
         payload["symbol"] = symbol or resolved_dataset or payload.get("dataset_name")
         payload["target"] = resolved_target or payload.get("target_column")
-        payload["start_date"] = payload.get("date_range", {}).get("start_date")
-        payload["end_date"] = payload.get("date_range", {}).get("end_date")
+        start_d = payload.get("date_range", {}).get("start_date")
+        end_d = payload.get("date_range", {}).get("end_date")
+        payload["start_date"] = start_d
+        payload["end_date"] = end_d
+        payload["startDate"] = start_d
+        payload["endDate"] = end_d
+        payload["datasetName"] = payload.get("dataset_name") or resolved_dataset
+        payload["rowCount"] = payload.get("row_count")
         payload["features"] = payload.get("columns", [])
+        
+        # Missing values map
+        mv_raw = payload.get("missing_values", [])
+        if isinstance(mv_raw, list):
+            payload["missingValues"] = {item.get("column", ""): item.get("missing_count", 0) for item in mv_raw if isinstance(item, dict)}
+        else:
+            payload["missingValues"] = {}
+
+        # Statistics map
+        stats_map = {}
+        if payload.get("descriptive_statistics"):
+            for col, col_stat in payload["descriptive_statistics"].items():
+                if isinstance(col_stat, dict):
+                    stats_map[col] = {
+                        "mean": col_stat.get("mean"),
+                        "median": col_stat.get("median"),
+                        "min": col_stat.get("min"),
+                        "max": col_stat.get("max"),
+                        "stdDev": col_stat.get("std"),
+                    }
+        payload["statistics"] = stats_map
+
         if payload.get("descriptive_statistics") and payload.get("target_column"):
             target_metric = payload["descriptive_statistics"].get(payload["target_column"], {})
             payload["mean"] = target_metric.get("mean")
@@ -110,3 +139,31 @@ async def generate_market_narrative(request: NarrativeRequest):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to generate narrative: {str(e)}")
+
+
+@router.get("/analysis/technical")
+def get_technical_analysis(
+    symbol: Optional[str] = Query(None, description="Instrument symbol (e.g. NIFTY50, INDIAVIX)"),
+    market_id: Optional[str] = Query(None, description="Market identifier or dataset filename"),
+    dataset: Optional[str] = Query(None, description="Alias for dataset name"),
+    interval: str = Query("1d", description="Observation interval"),
+):
+    """
+    Returns full technical indicator suite (Moving Averages, RSI, MACD, Bollinger Bands, ATR),
+    support/resistance levels, multi-period returns, and regime classification for NIFTY 50.
+    """
+    from app.services.technical_service import technical_service
+
+    target_symbol = symbol or market_id or dataset
+    try:
+        res = technical_service.calculate_technical_analysis(
+            symbol=target_symbol,
+            dataset_name=target_symbol,
+            interval=interval,
+        )
+        return res
+    except DataIngestionError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to compute technical analysis: {str(e)}")
+

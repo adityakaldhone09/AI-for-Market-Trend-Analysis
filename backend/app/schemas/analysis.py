@@ -77,3 +77,9 @@ class DataSummaryResponse(BaseModel):
     latest_value: Optional[float] = None
     previous_value: Optional[float] = None
     data_is_synthetic: Optional[bool] = None
+    datasetName: Optional[str] = None
+    rowCount: Optional[int] = None
+    startDate: Optional[str] = None
+    endDate: Optional[str] = None
+    missingValues: Optional[Dict[str, int]] = None
+    statistics: Optional[Dict[str, Dict[str, Optional[float]]]] = None
