@@ -10,6 +10,21 @@ import NotFound from '@/pages/not-found';
 const DashboardPage = lazy(() =>
   import('@/pages/DashboardPage').then((module) => ({ default: module.DashboardPage })),
 );
+const TechnicalAnalysisPage = lazy(() =>
+  import('@/pages/TechnicalAnalysisPage').then((module) => ({ default: module.TechnicalAnalysisPage })),
+);
+const MarketBreadthPage = lazy(() =>
+  import('@/pages/MarketBreadthPage').then((module) => ({ default: module.MarketBreadthPage })),
+);
+const SignalsPage = lazy(() =>
+  import('@/pages/SignalsPage').then((module) => ({ default: module.SignalsPage })),
+);
+const BacktestPage = lazy(() =>
+  import('@/pages/BacktestPage').then((module) => ({ default: module.BacktestPage })),
+);
+const PaperTradingPage = lazy(() =>
+  import('@/pages/PaperTradingPage').then((module) => ({ default: module.PaperTradingPage })),
+);
 const MarketAnalysisPage = lazy(() =>
   import('@/pages/MarketAnalysisPage').then((module) => ({ default: module.MarketAnalysisPage })),
 );
@@ -63,6 +78,46 @@ function App() {
                   element={
                     <LoadedPage>
                       <DashboardPage />
+                    </LoadedPage>
+                  }
+                />
+                <Route
+                  path="/technical-analysis"
+                  element={
+                    <LoadedPage>
+                      <TechnicalAnalysisPage />
+                    </LoadedPage>
+                  }
+                />
+                <Route
+                  path="/market-breadth"
+                  element={
+                    <LoadedPage>
+                      <MarketBreadthPage />
+                    </LoadedPage>
+                  }
+                />
+                <Route
+                  path="/research-signals"
+                  element={
+                    <LoadedPage>
+                      <SignalsPage />
+                    </LoadedPage>
+                  }
+                />
+                <Route
+                  path="/strategy-backtest"
+                  element={
+                    <LoadedPage>
+                      <BacktestPage />
+                    </LoadedPage>
+                  }
+                />
+                <Route
+                  path="/paper-trading"
+                  element={
+                    <LoadedPage>
+                      <PaperTradingPage />
                     </LoadedPage>
                   }
                 />

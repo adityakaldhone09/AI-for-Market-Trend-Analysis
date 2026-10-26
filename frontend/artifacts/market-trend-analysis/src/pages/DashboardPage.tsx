@@ -1,5 +1,20 @@
 import { useMemo } from 'react';
-import { ArrowDownRight, ArrowUpRight, Database, Layers3, ScanLine } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import {
+  Activity,
+  ArrowDownRight,
+  ArrowUpRight,
+  Compass,
+  Database,
+  Layers,
+  Layers3,
+  LineChart as LineChartIcon,
+  Scale,
+  ScanLine,
+  ShieldAlert,
+  Sliders,
+  Wallet,
+} from 'lucide-react';
 import {
   CartesianGrid,
   Line,
@@ -65,6 +80,74 @@ export function DashboardPage() {
       />
       <div className="mb-5">
         <RangeControls />
+      </div>
+
+      {/* NIFTY 50 Intelligence Quick Module Bar */}
+      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <Link
+          to="/technical-analysis"
+          className="surface flex items-center gap-3 p-3 text-slate-800 transition-all hover:border-[#0984E3] hover:shadow-sm"
+        >
+          <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-blue-50 text-[#0984E3]">
+            <LineChartIcon size={16} />
+          </div>
+          <div className="min-w-0">
+            <div className="truncate text-xs font-bold text-slate-900">Technical Indicators</div>
+            <div className="text-[10px] text-slate-400">SMAs, RSI, MACD, Regimes</div>
+          </div>
+        </Link>
+
+        <Link
+          to="/market-breadth"
+          className="surface flex items-center gap-3 p-3 text-slate-800 transition-all hover:border-[#0984E3] hover:shadow-sm"
+        >
+          <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-teal-50 text-[#00CEC9]">
+            <Layers size={16} />
+          </div>
+          <div className="min-w-0">
+            <div className="truncate text-xs font-bold text-slate-900">Market Breadth</div>
+            <div className="text-[10px] text-slate-400">A/D Ratio, VIX, Sectors</div>
+          </div>
+        </Link>
+
+        <Link
+          to="/research-signals"
+          className="surface flex items-center gap-3 p-3 text-slate-800 transition-all hover:border-[#0984E3] hover:shadow-sm"
+        >
+          <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-indigo-50 text-indigo-600">
+            <Activity size={16} />
+          </div>
+          <div className="min-w-0">
+            <div className="truncate text-xs font-bold text-slate-900">Research Signals</div>
+            <div className="text-[10px] text-slate-400">Explainable Stance & Stops</div>
+          </div>
+        </Link>
+
+        <Link
+          to="/strategy-backtest"
+          className="surface flex items-center gap-3 p-3 text-slate-800 transition-all hover:border-[#0984E3] hover:shadow-sm"
+        >
+          <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-amber-50 text-amber-600">
+            <Sliders size={16} />
+          </div>
+          <div className="min-w-0">
+            <div className="truncate text-xs font-bold text-slate-900">Strategy Backtest</div>
+            <div className="text-[10px] text-slate-400">Next-Bar Simulation & Alpha</div>
+          </div>
+        </Link>
+
+        <Link
+          to="/paper-trading"
+          className="surface flex items-center gap-3 p-3 text-slate-800 transition-all hover:border-[#0984E3] hover:shadow-sm"
+        >
+          <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-600">
+            <Wallet size={16} />
+          </div>
+          <div className="min-w-0">
+            <div className="truncate text-xs font-bold text-slate-900">Paper Trading</div>
+            <div className="text-[10px] text-slate-400">Virtual ₹10L Sandbox</div>
+          </div>
+        </Link>
       </div>
       {markets.loading && !markets.value ? (
         <LoadingState label="Loading markets" />
@@ -301,6 +384,21 @@ export function DashboardPage() {
                   </div>
                 </div>
               </Panel>
+            </div>
+          </div>
+
+          {/* Compliance & Regulatory Disclaimer Banner */}
+          <div className="mt-8 rounded-xl border border-slate-200 bg-white p-4 text-xs text-slate-600 shadow-sm">
+            <div className="flex items-start gap-3">
+              <Scale className="mt-0.5 size-4 shrink-0 text-[#0984E3]" />
+              <div className="space-y-1">
+                <span className="font-bold text-slate-800">
+                  Regulatory Notice & Academic Research Platform Boundaries
+                </span>
+                <p className="leading-relaxed text-slate-500">
+                  This system provides academic market intelligence, quantitative time-series forecasting, and paper trading simulations on NIFTY 50 benchmark data. It does not provide personalized investment advice or algorithmic order execution governed by SEBI circulars. Simulated paper trades operate without live broker connections.
+                </p>
+              </div>
             </div>
           </div>
         </>

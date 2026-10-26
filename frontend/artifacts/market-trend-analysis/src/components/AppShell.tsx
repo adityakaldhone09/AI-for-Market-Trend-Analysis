@@ -5,35 +5,49 @@ import {
   BarChart3,
   ChevronDown,
   CircleHelp,
+  Compass,
   Database,
   Gauge,
+  Layers,
   LineChart,
   Menu,
   RotateCw,
+  Sliders,
+  Wallet,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useWorkspace } from '@/features/market/WorkspaceContext';
 
 const navItems = [
   { to: '/dashboard', label: 'Overview', icon: BarChart3 },
+  { to: '/technical-analysis', label: 'Technical analysis', icon: LineChart },
+  { to: '/market-breadth', label: 'Market breadth & sectors', icon: Layers },
+  { to: '/research-signals', label: 'Research signals', icon: Activity },
+  { to: '/strategy-backtest', label: 'Strategy backtesting', icon: Sliders },
+  { to: '/paper-trading', label: 'Paper trading simulator', icon: Wallet },
   { to: '/market-analysis', label: 'Market analysis', icon: LineChart },
-  { to: '/forecast', label: 'Forecasts', icon: Activity },
-  { to: '/data-explorer', label: 'Data explorer', icon: Database },
+  { to: '/forecast', label: 'Forecasts', icon: Compass },
   { to: '/model-evaluation', label: 'Model evaluation', icon: Gauge },
+  { to: '/data-explorer', label: 'Data explorer', icon: Database },
 ];
 const titles: Record<string, string> = {
   '/dashboard': 'Market overview',
-  '/market-analysis': 'Historical analysis',
-  '/forecast': 'Forecast review',
+  '/technical-analysis': 'Technical indicators & regime',
+  '/market-breadth': 'Constituent breadth & sector performance',
+  '/research-signals': 'Decision support & research signals',
+  '/strategy-backtest': 'Historical strategy backtest',
+  '/paper-trading': 'Simulated paper trading account',
+  '/market-analysis': 'Historical observations',
+  '/forecast': 'ML price & return forecasting',
   '/data-explorer': 'Dataset explorer',
-  '/model-evaluation': 'Model evaluation',
+  '/model-evaluation': 'Chronological holdout evaluation',
 };
 
 export function AppShell() {
   const workspace = useWorkspace();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const currentTitle = titles[location.pathname] ?? 'Market workspace';
+  const currentTitle = titles[location.pathname] ?? 'NIFTY 50 Intelligence';
   const statusText =
     workspace.mode === 'demo'
       ? 'DEMO DATA'
@@ -55,22 +69,22 @@ export function AppShell() {
       <aside
         className={`sidebar fixed inset-y-0 left-0 z-40 flex flex-col transition-transform duration-200 md:static md:translate-x-0 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
-        <div className="flex h-[76px] items-center gap-3 border-b border-white/10 px-6">
-          <div className="grid size-9 place-items-center rounded-xl bg-[#d89a61] text-[#24303b]">
+        <div className="flex h-[76px] items-center gap-3 border-b border-white/10 px-5">
+          <div className="grid size-9 place-items-center rounded-xl bg-[#0984E3] text-white">
             <Activity size={19} strokeWidth={2.4} />
           </div>
           <div>
-            <div className="font-[var(--font-display)] text-[14px] font-extrabold tracking-[-.04em]">
-              FIELDNOTES
+            <div className="font-[var(--font-display)] text-[14px] font-extrabold tracking-[-.04em] text-white">
+              NIFTY 50 AI
             </div>
-            <div className="mt-0.5 font-mono text-[9px] tracking-[.14em] text-[#aab3b7]">
-              MARKET RESEARCH
+            <div className="mt-0.5 font-mono text-[9px] tracking-[.14em] text-[#00CEC9]">
+              MARKET INTELLIGENCE
             </div>
           </div>
         </div>
-        <div className="px-4 pt-7">
-          <div className="eyebrow px-3 text-[#9ca7aa]">Workspace</div>
-          <nav className="mt-3 space-y-1" aria-label="Main navigation">
+        <div className="px-3 pt-6">
+          <div className="eyebrow px-3 text-[#94a3b8]">Platform Modules</div>
+          <nav className="mt-2.5 space-y-1" aria-label="Main navigation">
             {navItems.map(({ to, label, icon: Icon }) => (
               <NavLink
                 key={to}

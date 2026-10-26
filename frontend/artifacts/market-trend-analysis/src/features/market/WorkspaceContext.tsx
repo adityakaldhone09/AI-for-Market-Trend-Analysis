@@ -58,10 +58,17 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
       .then((value) => {
         if (!active) return;
         setMarkets({ value, loading: false, error: null });
+        const nifty = value.find(
+          (item) =>
+            String(item.id).toLowerCase().includes('nifty50') ||
+            item.symbol?.toLowerCase().includes('nifty50') ||
+            String(item.id).toLowerCase().includes('nifty'),
+        );
+        const defaultId = nifty ? String(nifty.id) : String(value[0]?.id ?? '');
         setMarketId((selected) =>
           selected && value.some((item) => String(item.id) === selected)
             ? selected
-            : String(value[0]?.id ?? ''),
+            : defaultId,
         );
       })
       .catch((error: unknown) => {
