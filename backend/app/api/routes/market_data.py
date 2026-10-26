@@ -9,6 +9,7 @@ router = APIRouter(tags=["Market Data"])
 
 @router.get("/market-data", response_model=MarketDataResponse)
 def get_market_data(
+    market_id: Optional[str] = Query(None, description="Market identifier or dataset name"),
     dataset: Optional[str] = Query(None, description="Dataset filename (or symbol)"),
     symbol: Optional[str] = Query(None, description="Alias for dataset"),
     target_col: Optional[str] = Query(None, description="Target column"),
@@ -22,7 +23,7 @@ def get_market_data(
     """
     Returns chronologically ordered market observations with pagination and date filtering.
     """
-    dataset_name = dataset or symbol
+    dataset_name = market_id or dataset or symbol
     target_name = target_col or target
     resolved_page_size = limit if limit is not None else page_size
     try:

@@ -1,0 +1,6 @@
+{
+  "dataset_name": "ibm_stock_daily.csv",
+  "source": "alpha_vantage_daily",
+  "is_synthetic": false,
+  "description": "Real historical market observations for International Business Machines (IBM) synced from Alpha Vantage"
+}

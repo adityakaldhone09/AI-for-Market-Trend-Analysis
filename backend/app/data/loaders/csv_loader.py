@@ -30,12 +30,45 @@ class CSVDataLoader:
         if ".." in filename or filename.startswith("/") or "\\" in filename:
             raise DataIngestionError("Invalid dataset filename. Path traversal is not permitted.")
 
-        # Check raw and processed directories
-        candidate_paths = [
-            self.base_dir / "raw" / filename,
-            self.base_dir / "processed" / filename,
-            self.base_dir / filename,
-        ]
+        normalized_key = filename.strip().upper().replace(" ", "").replace("^", "")
+        symbol_map = {
+            "NIFTY50": "nifty50_daily.csv",
+            "NIFTY": "nifty50_daily.csv",
+            "NSEI": "nifty50_daily.csv",
+            "INDIAVIX": "india_vix_daily.csv",
+            "VIX": "india_vix_daily.csv",
+            "NIFTYBANK": "nifty_bank_daily.csv",
+            "BANKNIFTY": "nifty_bank_daily.csv",
+            "NSEBANK": "nifty_bank_daily.csv",
+            "NIFTYIT": "nifty_it_daily.csv",
+            "CNXIT": "nifty_it_daily.csv",
+            "NIFTYAUTO": "nifty_auto_daily.csv",
+            "CNXAUTO": "nifty_auto_daily.csv",
+            "NIFTYFMCG": "nifty_fmcg_daily.csv",
+            "CNXFMCG": "nifty_fmcg_daily.csv",
+            "NIFTYPHARMA": "nifty_pharma_daily.csv",
+            "CNXPHARMA": "nifty_pharma_daily.csv",
+            "CONSTITUENTS": "nifty50_constituents_daily.csv",
+            "NIFTY50_CONSTITUENTS": "nifty50_constituents_daily.csv",
+        }
+        mapped_name = symbol_map.get(normalized_key)
+
+        filename_csv = filename if filename.endswith(".csv") else f"{filename}.csv"
+        symbol_pattern = f"{filename.lower()}_stock_daily.csv"
+        daily_pattern = f"{filename.lower()}_daily.csv"
+
+        # Check raw, processed, and base directories
+        candidate_names = [mapped_name] if mapped_name else []
+        candidate_names.extend([filename, filename_csv, symbol_pattern, daily_pattern])
+        candidate_paths = []
+        for name in candidate_names:
+            if not name:
+                continue
+            candidate_paths.extend([
+                self.base_dir / "raw" / name,
+                self.base_dir / "processed" / name,
+                self.base_dir / name,
+            ])
 
         for p in candidate_paths:
             resolved = p.resolve()
@@ -107,6 +140,9 @@ class CSVDataLoader:
         # Sort chronologically
         df = df.sort_values(by="timestamp").reset_index(drop=True)
 
+        # Identify all numeric columns
+        numeric_cols = [c for c in df.select_dtypes(include=[np.number]).columns if c != "timestamp"]
+
         # Determine target column
         selected_target = target_col
         if not selected_target:
@@ -116,8 +152,6 @@ class CSVDataLoader:
                     break
 
         if not selected_target or selected_target not in df.columns:
-            # Fall back to first numeric column other than timestamp
-            numeric_cols = [c for c in df.select_dtypes(include=[np.number]).columns if c != "timestamp"]
             if not numeric_cols:
                 raise DataIngestionError("No valid numeric target column found in dataset.")
             selected_target = numeric_cols[0]
@@ -132,14 +166,38 @@ class CSVDataLoader:
         # Ensure canonical target_value column exists for consistent downstream modeling
         df["target_value"] = df[selected_target]
 
-        # Metadata
-        numeric_cols = [c for c in df.select_dtypes(include=[np.number]).columns]
-        is_synthetic = "synthetic" in filename.lower() or "simulated" in filepath.stem.lower()
+        # Check for companion metadata file
+        meta_file = filepath.with_name(f"{filepath.stem}.meta.json")
+        companion_meta = {}
+        if meta_file.is_file():
+            try:
+                import json
+                with open(meta_file, "r") as f:
+                    companion_meta = json.load(f)
+            except Exception as e:
+                logger.debug(f"Could not read companion meta file {meta_file}: {e}")
+
+        is_synthetic = companion_meta.get(
+            "is_synthetic",
+            ("synthetic" in filename.lower() or "simulated" in filepath.stem.lower())
+        )
+        source = companion_meta.get(
+            "source",
+            ("synthetic_generator" if is_synthetic else "csv_ingestion")
+        )
 
         metadata = {
-            "dataset_name": filename,
+            "dataset_name": filepath.name,
             "filepath": str(filepath),
-            "source": "synthetic_generator" if is_synthetic else "csv_ingestion",
+            "symbol": companion_meta.get("symbol", filepath.stem.replace("_daily", "").replace("_stock_daily", "").upper()),
+            "name": companion_meta.get("name", filepath.stem.replace("_daily", "").replace("_", " ").title()),
+            "instrument": companion_meta.get("instrument", companion_meta.get("symbol", filepath.stem.upper())),
+            "exchange": companion_meta.get("exchange", "NSE"),
+            "currency": companion_meta.get("currency", "INR"),
+            "timeframe": companion_meta.get("timeframe", "1d"),
+            "time_zone": companion_meta.get("time_zone", "Asia/Kolkata"),
+            "source": source,
+            "description": companion_meta.get("description", f"Market dataset for {filepath.name}"),
             "is_synthetic": is_synthetic,
             "retrieval_time": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
             "row_count": len(df),

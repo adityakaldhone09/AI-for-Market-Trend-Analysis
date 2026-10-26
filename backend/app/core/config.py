@@ -27,12 +27,16 @@ class Settings(BaseSettings):
     BASE_DIR: Path = Path(__file__).resolve().parent.parent.parent
     DATASETS_DIR: str = "datasets"
     ARTIFACTS_DIR: str = "artifacts"
-    DEFAULT_DATASET: str = "aapl_stock_daily.csv"
+    DEFAULT_DATASET: str = "nifty50_daily.csv"
+    PRIMARY_MARKET_SYMBOL: str = "NIFTY50"
+    MARKET_TIMEZONE: str = "Asia/Kolkata"
 
     # Market Data Providers
-    DATA_PROVIDER: str = "alpha_vantage"
+    DATA_PROVIDER: str = "csv"
     ALPHA_VANTAGE_API_KEY: str = ""
     TWELVE_DATA_API_KEY: str = ""
+    DHAN_CLIENT_ID: str = ""
+    DHAN_ACCESS_TOKEN: str = ""
 
     # News & Sentiment Providers
     NEWS_PROVIDER: str = "gnews"

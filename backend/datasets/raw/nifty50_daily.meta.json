@@ -1,0 +1,35 @@
+{
+  "dataset_name": "nifty50_daily.csv",
+  "symbol": "NIFTY50",
+  "name": "NIFTY 50 Index",
+  "instrument": "NIFTY 50",
+  "exchange": "NSE",
+  "currency": "INR",
+  "timeframe": "1d",
+  "time_zone": "Asia/Kolkata",
+  "source": "NSE / Nifty Indices Historical Records",
+  "description": "Official historical daily OHLC candles for NIFTY 50 benchmark index (NSE: ^NSEI). Traded share volume is not applicable for index benchmarks.",
+  "is_synthetic": false,
+  "retrieval_time": "2026-10-26T17:54:36.274521Z",
+  "row_count": 1235,
+  "date_range": {
+    "start_date": "2021-10-26",
+    "end_date": "2026-10-26"
+  },
+  "columns": [
+    "timestamp",
+    "open",
+    "high",
+    "low",
+    "close",
+    "target_value"
+  ],
+  "default_target": "close",
+  "numeric_columns": [
+    "open",
+    "high",
+    "low",
+    "close",
+    "target_value"
+  ]
+}

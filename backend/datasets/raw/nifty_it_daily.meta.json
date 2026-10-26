@@ -1,0 +1,13 @@
+{
+  "dataset_name": "nifty_it_daily.csv",
+  "symbol": "NIFTYIT",
+  "name": "NIFTY IT Index",
+  "exchange": "NSE",
+  "currency": "INR",
+  "is_synthetic": false,
+  "row_count": 492,
+  "date_range": {
+    "start_date": "2024-10-28",
+    "end_date": "2026-10-26"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "dataset_name": "synthetic_market_data.csv",
+  "source": "synthetic_generator",
+  "is_synthetic": true,
+  "description": "Deterministic benchmark synthetic market time-series generated with Geometric Brownian Motion (seed 42)"
+}

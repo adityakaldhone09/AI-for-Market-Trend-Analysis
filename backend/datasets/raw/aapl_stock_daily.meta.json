@@ -1,0 +1,6 @@
+{
+  "dataset_name": "aapl_stock_daily.csv",
+  "source": "simulated_benchmark",
+  "is_synthetic": true,
+  "description": "Synthetic AAPL benchmark time-series generated using Geometric Brownian Motion with drift=0.12, vol=0.25 (seed 101)"
+}

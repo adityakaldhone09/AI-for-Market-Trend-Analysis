@@ -25,6 +25,11 @@ class DataService:
             results.append(
                 MarketDatasetMetadata(
                     dataset_name=meta["dataset_name"],
+                    symbol=meta.get("symbol"),
+                    name=meta.get("name"),
+                    exchange=meta.get("exchange", "NSE"),
+                    currency=meta.get("currency", "INR"),
+                    description=meta.get("description"),
                     source=meta["source"],
                     is_synthetic=meta["is_synthetic"],
                     retrieval_time=meta["retrieval_time"],

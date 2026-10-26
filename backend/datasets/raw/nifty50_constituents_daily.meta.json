@@ -1,0 +1,14 @@
+{
+  "dataset_name": "nifty50_constituents_daily.csv",
+  "symbol": "NIFTY50_CONSTITUENTS",
+  "name": "NIFTY 50 Top Constituents Daily",
+  "exchange": "NSE",
+  "currency": "INR",
+  "is_synthetic": false,
+  "row_count": 4940,
+  "symbols_count": 20,
+  "date_range": {
+    "start_date": "2025-10-27",
+    "end_date": "2026-10-26"
+  }
+}

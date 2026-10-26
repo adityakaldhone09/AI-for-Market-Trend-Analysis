@@ -1,0 +1,13 @@
+{
+  "dataset_name": "nifty_fmcg_daily.csv",
+  "symbol": "NIFTYFMCG",
+  "name": "NIFTY FMCG Index",
+  "exchange": "NSE",
+  "currency": "INR",
+  "is_synthetic": false,
+  "row_count": 490,
+  "date_range": {
+    "start_date": "2024-10-28",
+    "end_date": "2026-10-26"
+  }
+}
