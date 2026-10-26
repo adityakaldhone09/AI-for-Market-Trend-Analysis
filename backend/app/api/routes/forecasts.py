@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException
 from app.data.loaders.csv_loader import DataIngestionError
 from app.schemas.forecast import ForecastRequest, ForecastResponse
@@ -19,9 +20,17 @@ def create_forecast(request: ForecastRequest):
         payload["target"] = request.target or request.target_col or payload.get("target_col")
         payload["model"] = request.model or request.model_type
         payload["model_id"] = request.model_type
-        payload["frequency"] = "business-day"
-        payload["generated_at"] = payload.get("last_historical_timestamp")
+        payload["frequency"] = "daily"
+        gen_time = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        payload["generated_at"] = gen_time
+        payload["createdAt"] = gen_time
+        payload["marketId"] = payload.get("symbol") or payload.get("dataset_name")
+        payload["modelName"] = payload.get("model_name")
+        payload["modelVersion"] = payload.get("model_version")
+        payload["data_is_synthetic"] = payload.get("is_synthetic", False)
+
         forecast_points = []
+        values_points = []
         for item in payload.get("forecasts", []):
             point = dict(item)
             numeric = point.get("predicted_value")
@@ -31,9 +40,17 @@ def create_forecast(request: ForecastRequest):
             point["lower"] = point.get("lower_bound")
             point["upper"] = point.get("upper_bound")
             forecast_points.append(point)
+            values_points.append({
+                "date": point.get("timestamp"),
+                "predicted": numeric,
+                "lowerBound": point.get("lower_bound"),
+                "upperBound": point.get("upper_bound"),
+            })
         payload["predictions"] = forecast_points
-        if payload.get("forecasts"):
-            payload["evaluation"] = {"mae": 0.0, "rmse": 0.0}
+        payload["values"] = values_points
+        # Do not fabricate evaluation metrics like {"mae": 0.0, "rmse": 0.0}
+        # Evaluation is computed genuinely via POST /api/v1/evaluations
+        payload["evaluation"] = None
         return payload
     except DataIngestionError as e:
         raise HTTPException(status_code=400, detail=str(e))

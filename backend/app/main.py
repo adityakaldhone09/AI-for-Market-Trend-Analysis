@@ -5,6 +5,8 @@ from fastapi.responses import JSONResponse
 
 from app.api.routes import (
     analysis,
+    backtests,
+    breadth,
     evaluations,
     forecasts,
     health,
@@ -12,6 +14,8 @@ from app.api.routes import (
     markets,
     models,
     news,
+    paper_trading,
+    signals,
 )
 from app.core.config import settings
 from app.core.logging import logger, setup_logging
@@ -72,6 +76,10 @@ app.include_router(forecasts.router, prefix=settings.API_V1_PREFIX)
 app.include_router(models.router, prefix=settings.API_V1_PREFIX)
 app.include_router(evaluations.router, prefix=settings.API_V1_PREFIX)
 app.include_router(news.router, prefix=settings.API_V1_PREFIX)
+app.include_router(breadth.router, prefix=settings.API_V1_PREFIX)
+app.include_router(signals.router, prefix=settings.API_V1_PREFIX)
+app.include_router(backtests.router, prefix=settings.API_V1_PREFIX)
+app.include_router(paper_trading.router, prefix=settings.API_V1_PREFIX)
 
 
 if __name__ == "__main__":

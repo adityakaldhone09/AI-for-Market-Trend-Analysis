@@ -39,6 +39,7 @@ class EvaluationService:
 
         model_type = request.model_type.lower()
         if model_type == "baseline_naive":
+            candidate_preds = naive_preds
             candidate_metrics_raw = naive_metrics_raw
             model_id = "baseline_naive"
             model_name = "Naive Persistence Baseline"
@@ -46,6 +47,7 @@ class EvaluationService:
         elif model_type == "baseline_sma":
             sma_model = MovingAverageBaselineModel(window=request.sma_window)
             sma_preds = sma_model.predict(y_test)
+            candidate_preds = sma_preds
             candidate_metrics_raw = calculate_metrics(y_test, sma_preds)
             model_id = f"baseline_sma_w{request.sma_window}"
             model_name = f"Simple Moving Average (Window={request.sma_window})"
@@ -66,6 +68,7 @@ class EvaluationService:
             X_test = test_df[feature_cols].values
             X_test_scaled = scaler.transform(X_test)
             test_preds = model.predict(X_test_scaled)
+            candidate_preds = test_preds
 
             candidate_metrics_raw = calculate_metrics(y_test, test_preds)
             model_id = bundle["metadata"]["model_id"]
@@ -77,9 +80,24 @@ class EvaluationService:
         candidate_metrics = MetricScore(**candidate_metrics_raw)
         improvements = compare_with_baseline(candidate_metrics_raw, naive_metrics_raw)
 
+        eval_values = []
+        for i in range(len(y_test)):
+            ts_val = test_df["timestamp"].iloc[i]
+            ts_str = ts_val.strftime("%Y-%m-%d") if hasattr(ts_val, "strftime") else str(ts_val)[:10]
+            eval_values.append({
+                "date": ts_str,
+                "actual": round(float(y_test[i]), 2),
+                "predicted": round(float(candidate_preds[i]), 2),
+            })
+
+        t_start = str(test_df["timestamp"].iloc[0].strftime("%Y-%m-%d"))
+        t_end = str(test_df["timestamp"].iloc[-1].strftime("%Y-%m-%d"))
+
         return EvaluationResponse(
             model_id=model_id,
             model_name=model_name,
+            modelName=model_name,
+            version="1.0.0",
             dataset_name=target_dataset,
             target_col=selected_target,
             horizon=request.horizon,
@@ -88,15 +106,19 @@ class EvaluationService:
                 end_date=str(train_df["timestamp"].iloc[-1].strftime("%Y-%m-%d")),
             ),
             test_date_range=DateRange(
-                start_date=str(test_df["timestamp"].iloc[0].strftime("%Y-%m-%d")),
-                end_date=str(test_df["timestamp"].iloc[-1].strftime("%Y-%m-%d")),
+                start_date=t_start,
+                end_date=t_end,
             ),
+            period=f"{t_start} to {t_end}",
             train_samples=len(train_df),
             test_samples=len(test_df),
             metrics=candidate_metrics,
             baseline_naive_metrics=naive_metrics,
             performance_improvement_pct=improvements,
             evaluation_timestamp=datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+            values=eval_values,
+            is_synthetic=meta.get("is_synthetic", False),
+            data_is_synthetic=meta.get("is_synthetic", False),
         )
 
 

@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import joblib
 import numpy as np
 import pandas as pd
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.preprocessing import StandardScaler
 
@@ -20,6 +21,7 @@ class ModelTrainer:
     SUPPORTED_MODELS = {
         "linear_regression": LinearRegression,
         "ridge": Ridge,
+        "random_forest": RandomForestRegressor,
     }
 
     def __init__(self, artifacts_dir: Optional[Path] = None):
@@ -69,6 +71,8 @@ class ModelTrainer:
         model_cls = self.SUPPORTED_MODELS[model_type]
         if model_type == "ridge":
             model = model_cls(alpha=alpha)
+        elif model_type == "random_forest":
+            model = model_cls(n_estimators=100, max_depth=6, random_state=42)
         else:
             model = model_cls()
 
@@ -87,10 +91,12 @@ class ModelTrainer:
         version = f"v_{timestamp_str}"
         model_id = f"{model_type}_{dataset_name}_{version}".replace(".csv", "").replace("/", "_")
 
+        import sklearn
         metadata = {
             "model_id": model_id,
             "model_type": model_type,
             "version": version,
+            "sklearn_version": getattr(sklearn, "__version__", "unknown"),
             "dataset_name": dataset_name,
             "target_col": target_col,
             "feature_cols": feature_cols,

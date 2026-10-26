@@ -123,12 +123,29 @@ class NewsService:
         logger.info(f"Fetching news for query='{query}' via {self.provider}")
         articles: List[NewsArticle] = []
 
-        if self.provider == "newsapi" or (not self.gnews_key and self.newsapi_key):
-            articles = await self.fetch_newsapi(query, limit=limit)
-            active_provider = "NewsAPI"
+        has_gnews = bool(self.gnews_key and self.gnews_key.strip())
+        has_newsapi = bool(self.newsapi_key and self.newsapi_key.strip())
+
+        if not has_gnews and not has_newsapi:
+            logger.info("News provider API keys not configured. Returning empty offline news payload.")
+            active_provider = "offline"
+            articles = []
+        elif self.provider == "newsapi" or (not has_gnews and has_newsapi):
+            try:
+                articles = await self.fetch_newsapi(query, limit=limit)
+                active_provider = "NewsAPI"
+            except Exception as e:
+                logger.warning(f"Failed to fetch news from NewsAPI: {e}")
+                active_provider = "offline"
+                articles = []
         else:
-            articles = await self.fetch_gnews(query, limit=limit)
-            active_provider = "GNews"
+            try:
+                articles = await self.fetch_gnews(query, limit=limit)
+                active_provider = "GNews"
+            except Exception as e:
+                logger.warning(f"Failed to fetch news from GNews: {e}")
+                active_provider = "offline"
+                articles = []
 
         bullish = sum(1 for a in articles if a.sentiment == "bullish")
         bearish = sum(1 for a in articles if a.sentiment == "bearish")

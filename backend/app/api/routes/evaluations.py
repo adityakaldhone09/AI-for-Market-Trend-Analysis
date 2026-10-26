@@ -18,15 +18,22 @@ def evaluate_model(request: EvaluationRequest):
         payload["symbol"] = request.symbol or request.dataset_name or payload.get("dataset_name")
         payload["target"] = request.target or request.target_col or payload.get("target_col")
         payload["model"] = request.model or request.model_type
-        payload["mae"] = payload.get("metrics", {}).get("mae")
-        payload["rmse"] = payload.get("metrics", {}).get("rmse")
-        payload["mse"] = payload.get("metrics", {}).get("mse")
-        payload["r2"] = payload.get("metrics", {}).get("r2")
+        payload["modelName"] = payload.get("model_name")
+        payload["version"] = payload.get("version", "1.0.0")
+        metrics_dict = payload.get("metrics")
+        if isinstance(metrics_dict, dict):
+            payload["mae"] = metrics_dict.get("mae")
+            payload["rmse"] = metrics_dict.get("rmse")
+            payload["mse"] = metrics_dict.get("mse")
+            payload["r2"] = metrics_dict.get("r2")
+        t_start = payload.get("test_date_range", {}).get("start_date")
+        t_end = payload.get("test_date_range", {}).get("end_date")
         payload["test_period"] = {
-            "start": payload.get("test_date_range", {}).get("start_date"),
-            "end": payload.get("test_date_range", {}).get("end_date"),
+            "start": t_start,
+            "end": t_end,
         }
-        payload["data_is_synthetic"] = False
+        payload["period"] = f"{t_start} to {t_end}"
+        payload["data_is_synthetic"] = payload.get("is_synthetic", False)
         return payload
     except DataIngestionError as e:
         raise HTTPException(status_code=400, detail=str(e))

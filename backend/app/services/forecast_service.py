@@ -50,6 +50,15 @@ class ForecastService:
             description="L2 regularized linear model preventing overfitting on collinear financial lag features.",
             parameters={"alpha": 1.0, "lags": [1, 2, 3, 5, 7], "rolling_windows": [3, 7, 14]},
         ),
+        ModelMetadata(
+            model_id="random_forest",
+            name="Random Forest Regressor",
+            model_type="ensemble",
+            version="1.0.0",
+            readiness_status="ready",
+            description="Non-linear tree-based ensemble capturing complex multi-lag interactions.",
+            parameters={"n_estimators": 100, "max_depth": 6},
+        ),
     ]
 
     def __init__(self):
